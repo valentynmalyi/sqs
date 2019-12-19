@@ -1,11 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
+import os
 
-headers = {'User-Agent': "Lynx/2.8.8pre.4 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/2.12.23"}
+headers = {'User-Agent': "*"}
 
 
-def get_info(url) -> dict:
-    response = requests.get(url, headers=headers)
+def get_info(url: str, proxy: dict = None, timeout=60) -> dict:
+    proxy = proxy or {}
+    response = requests.get(url, headers=headers, proxies=proxy, timeout=timeout)
     soup = BeautifulSoup(response.content, features="lxml")
 
     title_ = soup.select("#productTitle")
@@ -31,6 +33,6 @@ def get_info(url) -> dict:
 if __name__ == '__main__':
     urls = ["https://www.amazon.com/dp/B079RQJGVH",
             "https://www.amazon.com/Amazon-Essentials-Womens-Crewneck-Sweater/dp/B079RF5S8T",
-            "https://www.amazon.com/dp/B07XZWYNGF","https://www.amazon.com/dp/B07R63BC12"]
+            "https://www.amazon.com/dp/B07XZWYNGF", "https://www.amazon.com/dp/B07R63BC12"]
     for url in urls:
-        print(get_info(url=url))
+        print(get_info(url=url, proxy={'https': "101.108.108.213:8080"}))

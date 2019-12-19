@@ -12,13 +12,14 @@ def endpoint(event, context):
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(str(os.environ['S3']))
     body = []
+    proxy = {'https': str(os.environ['PROXY'])}
 
-    for message in queue.receive_messages(MaxNumberOfMessages=10):
+    for message in queue.receive_messages(MaxNumberOfMessages=2):
         try:
-            info = get_info(url=message.body)
+            info = get_info(url=message.body, proxy=proxy)
             info["url"] = message.body
             s3_body = json.dumps(info)
-            key = f"{message.body}|{datetime.datetime.utcnow()}".replace("/","|")
+            key = f"{message.body}|{datetime.datetime.utcnow()}.json".replace("/", "|")
             bucket.put_object(Key=key, Body=s3_body)
         except Exception as e:
             body.append({"url": message.body, "state": False, "error": repr(e)})

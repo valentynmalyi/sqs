@@ -5,11 +5,16 @@ frameworkVersion: ">=1.2.0 <2.0.0"
 
 plugins:
   - serverless-python-requirements
+  - serverless-s3-remover
 
 custom:
   sqs: vmalyi-sqs
   s3: vmalyi-s3
   path: vmalyi-path
+  proxy: "101.108.108.213:8080"
+  remover:
+    buckets:
+      - vmalyi-s3
 
 provider:
   name: aws
@@ -18,6 +23,7 @@ provider:
   environment:
     SQS: ${self:custom.sqs}
     S3: ${self:custom.s3}
+    PROXY: ${self:custom.proxy}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -42,12 +48,14 @@ provider:
 functions:
   SendSqs:
     handler: send_sqs.endpoint
+    timeout: 10
     events:
       - http:
           path: ${self:custom.path}
           method: post
   ReadSqs:
     handler: read_sqs.endpoint
+    timeout: 150
     events:
       - http:
           path: ${self:custom.path}
