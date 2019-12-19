@@ -3,6 +3,9 @@ service:
 
 frameworkVersion: ">=1.2.0 <2.0.0"
 
+plugins:
+  - serverless-python-requirements
+
 custom:
   sqs: vmalyi-sqs
   s3: vmalyi-s3
@@ -23,17 +26,17 @@ provider:
         - "sqs:ReceiveMessage"
         - "sqs:DeleteMessage"
       Resource:
-      - "arn:aws:sqs:${self:provider.region}:*:${self:custom.sqs}"
-      - "arn:aws:sqs:${self:provider.region}:*:${self:custom.sqs}/*"
+        - "arn:aws:sqs:${self:provider.region}:*:${self:custom.sqs}"
+        - "arn:aws:sqs:${self:provider.region}:*:${self:custom.sqs}/*"
     - Effect: "Allow"
       Action:
-         - "s3:GetBucketNotification"
-         - "s3:PutBucketNotification"
-         - "s3:PutObject"
-         - "s3:PutObjectAcl"
+        - "s3:GetBucketNotification"
+        - "s3:PutBucketNotification"
+        - "s3:PutObject"
+        - "s3:PutObjectAcl"
       Resource:
-      - "arn:aws:s3::*:${self:custom.s3}"
-      - "arn:aws:s3::*:${self:custom.s3}/*"
+        - "arn:aws:s3::*:${self:custom.s3}"
+        - "arn:aws:s3::*:${self:custom.s3}/*"
 
 
 functions:

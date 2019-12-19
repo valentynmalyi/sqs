@@ -2,6 +2,7 @@ import boto3
 import datetime
 import os
 import json
+from get_info import get_info
 
 
 def endpoint(event, context):
@@ -14,14 +15,15 @@ def endpoint(event, context):
 
     for message in queue.receive_messages(MaxNumberOfMessages=10):
         try:
-            if str(message.body).startswith("http"):
-                raise ValueError("input url")
-            s3_body = json.dumps({"url": message.body, "titile": "title"})
-            bucket.put_object(Key=f"{message.body}|{datetime.datetime.utcnow()}", Body=s3_body)
-        except Exception:
-            body.append({"url": message.body, "state": 0})
+            info = get_info(url=message.body)
+            info["url"] = message.body
+            s3_body = json.dumps(info)
+            key = f"{message.body}|{datetime.datetime.utcnow()}".replace("/","|")
+            bucket.put_object(Key=key, Body=s3_body)
+        except Exception as e:
+            body.append({"url": message.body, "state": False, "error": repr(e)})
         else:
-            body.append({"url": message.body, "state": 1})
+            body.append({"url": message.body, "state": True})
         finally:
             message.delete()
 
