@@ -1,0 +1,10 @@
+{
+  "name": "vmalyiTask",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-python-requirements": "^5.0.1",
+    "serverless-s3-remover": "^0.6.0"
+  }
+}
