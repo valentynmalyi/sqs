@@ -1,0 +1,66 @@
+service:
+  name: vmalyiTask
+
+frameworkVersion: ">=1.2.0 <2.0.0"
+
+custom:
+  sqs: vmalyi-sqs
+  s3: vmalyi-s3
+  path: vmalyi-path
+
+plugins:
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: eu-north-1
+  environment:
+    SQS: ${self:custom.sqs}
+    S3: ${self:custom.s3}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
+        - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
+      Resource:
+      - "arn:aws:sqs:${self:provider.region}:*:${self:custom.sqs}"
+      - "arn:aws:sqs:${self:provider.region}:*:${self:custom.sqs}/*"
+    - Effect: "Allow"
+      Action:
+         - "s3:GetBucketNotification"
+         - "s3:PutBucketNotification"
+         - "s3:PutObject"
+         - "s3:PutObjectAcl"
+      Resource:
+      - "arn:aws:s3::*:${self:custom.s3}"
+      - "arn:aws:s3::*:${self:custom.s3}/*"
+
+
+functions:
+  SendSqs:
+    handler: send_sqs.endpoint
+    events:
+      - http:
+          path: ${self:custom.path}
+          method: post
+  ReadSqs:
+    handler: read_sqs.endpoint
+    events:
+      - http:
+          path: ${self:custom.path}
+          method: get
+
+
+resources:
+  Resources:
+    MyQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.sqs}
+    S3Bucke:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.s3}
