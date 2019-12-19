@@ -3,3 +3,9 @@ venv/
 *.pyc
 __pycache__/
 
+#SERVERLESS STUFF
+admin.env
+.env
+_meta
+.serverless
+node_modules
