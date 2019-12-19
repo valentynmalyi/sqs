@@ -9,3 +9,4 @@ admin.env
 _meta
 .serverless
 node_modules
+package-lock.json
