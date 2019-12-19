@@ -8,9 +8,6 @@ custom:
   s3: vmalyi-s3
   path: vmalyi-path
 
-plugins:
-  - serverless-python-requirements
-
 provider:
   name: aws
   runtime: python3.6
